@@ -1,5 +1,5 @@
 /*
- * jquery.mnervDoodle.js
+ * dudlr.js
  *
  * Functions for capturing and recording modifications to a canvas element,
  * to enable a scratchpad UI for recording doodles.
@@ -23,6 +23,7 @@
 
     var noop = function () {};
 
+
     DudlrCanvas.prototype = {
         __init__: function(domelement) {
             var o = this;
@@ -32,6 +33,7 @@
             this.id = null;
             this._handler = noop;
             //this.cvs_elm = $("#" + getopt(opts, "canvas_id", "canevaz"));
+            this.recorder = new DudlrStrokeRecorder();
             this.cvs_elm = $(domelement);
             this.ctx = this.cvs_elm[0].getContext('2d');
             this.ctx.fillStyle = "rgba(255,255,255,1)";
@@ -101,6 +103,14 @@
         
     };
 
+    var FILL_MODES = [
+        'none',
+        'rgba(0,0,0,0.5)',
+        'rgba(0,0,0,1)',
+        'rgba(255,255,255,0.5)',
+        'rgba(255,255,255,1)'
+    ];
+
     var PenWidget = function(cvs, opts) {
         this.__init__(cvs, opts);
     };
@@ -122,6 +132,7 @@
                 'none', 'black (50% transparent)', 'black', 
                 'white (50% transparent)', 'white'
                 ];
+            this.robot = null;
         },
 
         init: function() {
@@ -140,6 +151,7 @@
             ctx.moveTo(x, y);
             ctx.lineTo(x+1, y+1);
             ctx.stroke();
+            this.cvs.recorder.moveTo(x, y);
             this.active = true;
         },
 
@@ -147,6 +159,7 @@
             if (e.keyCode == 70) {
                 this.fillmode += 1;
                 this.fillmode = this.fillmode % this.fillmodes.length;
+                this.cvs.recorder.fillStyle(this.fillmode);
                 console.log('fill mode : ' + this.fillmode);
                 // XXX - need to make callback
                 $('#fill-mode').text(this.fillmodeLabels[this.fillmode]);
@@ -154,6 +167,13 @@
                     console.log('setting fillstyle to : ' + this.fillmodes[this.fillmode]);
                     this.cvs.ctx.fillStyle = this.fillmodes[this.fillmode];
                 }
+            } else if (e.keyCode == 82) {
+                if (!this.robot) {
+                    $('body').append('<canvas class="robot" width="500" height="250"></canvas>');
+                    $('canvas.robot').dudlrRobot(this.cvs.recorder.recorded);
+                    this.robot = $.dudlrRobots()[0];
+                }
+                this.robot.handDraw(10);
             }
         },
 
@@ -168,6 +188,7 @@
                 var ly = cvs.lasty;
                 ctx.lineTo(x, y);
                 ctx.stroke();
+                this.cvs.recorder.lineTo(x, y);
             } else {
                 cvs.lasty = cvs.lastx = -1;
             }            
@@ -176,12 +197,141 @@
 
         mouseup: function(e) {
             var ctx = this.cvs.ctx;
-            ctx.lineTo(this.startx, this.starty);
-            if (this.fillmode) ctx.fill();
+            if (this.fillmode) {
+                ctx.lineTo(this.startx, this.starty);
+                this.cvs.recorder.lineTo(this.startx, this.starty);
+                ctx.fill();
+                this.cvs.recorder.fill();
+            }
             this.active = false;
         }
-    }
+    };
+    
+    DudlrStrokeRecorder = function () {
+        return this.__init__();
+    };
 
+    DudlrStrokeRecorder.prototype = {
+        __init__: function() {
+            this.stack = [];
+            this.recorded = "";
+            this.last_command = null;
+        },
+        lineTo: function(x, y) {
+            if (!this._inbounds(x, y)) {
+                return;
+            }
+            //var stack = this.stack;
+            this._popStack();
+            if (this.last_command != 'l') {
+                this.last_command = 'l';
+                //stack.push('l');
+                this.recorded += 'l';
+            }
+            //stack.push(x);
+            //stack.push(y);
+            this.recorded += this._pad(x) + this._pad(y);
+        },
+        moveTo: function(x, y) {
+            if (!this._inbounds(x, y)) {
+                return;
+            }
+            this._popStack();
+            this.recorded += 'm' + this._pad(x) + this._pad(y);
+            this.last_command = 'm';
+        },
+        fillStyle: function(mode) {
+            this.stack.push('s' + mode);
+            this.last_command = 's';
+        },
+        fill: function() {
+            this.last_command = 'f';
+            this.recorded += 'f';
+        },
+        _popStack: function() {
+            if (this.stack.length) {
+                this.recorded += this.stack[this.stack.length - 1];
+                this.stack = [];
+            }
+        },
+        _pad: function(n) {
+            var x = n;
+            if (x < 0) {
+                x = 0;
+            }
+            if (x < 10) {
+                return '00' + n;
+            } else if (x < 100) {
+                return '0' + n;
+            } else {
+                return '' + n;
+            }
+        },
+        _inbounds: function(x, y) {
+            return (x >= 0 && x <= 500 && y >= 0 && y <= 250);
+        }
+    };
+
+
+    var DudlrRobot = function(domelement, recording) {
+        return this.__init__(domelement, recording);
+    };
+
+    DudlrRobot.prototype = {
+
+        __init__: function(domelement, recording) {
+            this.recording = recording;
+            this.domelement = domelement;
+            this.cvs_elm = $(domelement);
+            this._timer = false;
+            this.idx = 0;
+            this.ctx = this.cvs_elm[0].getContext('2d');
+            this.ctx.fillStyle = "rgba(255,255,255,1)";
+            this.ctx.fillRect(0, 0, this.cvs_elm[0].width, this.cvs_elm[0].height);
+            this.ctx.fillStyle = "rgba(0,0,0,0.5)";
+        },
+
+        run: function() {
+            this.idx = 0;
+            while (this.idx < this.recording.length) {
+                this._push();  
+            } 
+        },
+
+        handDraw: function(interval) {
+            var o = this;
+            this._timer = window.setInterval(function() { o._push(); }, interval);
+        },
+
+        _push: function() {
+            if (this.recording[this.idx] == 'm') {
+                this.idx++;
+                var x = 1 * (this.recording[this.idx++] + this.recording[this.idx++] + this.recording[this.idx++]);
+                var y = 1 * (this.recording[this.idx++] + this.recording[this.idx++] + this.recording[this.idx++]);
+                this.ctx.beginPath();
+                this.ctx.moveTo(x, y);
+                this.ctx.lineTo(x+1, y+1);
+                this.ctx.stroke();
+            } else if (this.recording[this.idx] == 'l') {
+                this.idx++;
+            } else if (this.recording[this.idx] == 's') {
+                this.idx++;
+                this.ctx.fillStyle = FILL_MODES[1 * this.recording[this.idx++]]; 
+            } else if (this.recording[this.idx] == 'f') {
+                this.idx++;
+                this.ctx.fill();
+            } else {
+                var x = 1 * (this.recording[this.idx++] + this.recording[this.idx++] + this.recording[this.idx++]);
+                var y = 1 * (this.recording[this.idx++] + this.recording[this.idx++] + this.recording[this.idx++]);
+                this.ctx.lineTo(x, y);
+                this.ctx.stroke();
+            }
+            if (this._timer && this.idx >= this.recording.length) {
+                window.clearInterval(this._timer);
+                this._timer = false;
+            }
+        }
+    };
 
     _registered = [];
 
@@ -193,8 +343,24 @@
         console.log("this [1] : " + this);
         return this.each(function() {
             console.log("this : " + this);
-            _registered[_registered.length] = new DudlrCanvas(this);
+            _registered.push(new DudlrCanvas(this));
         });
+    };
+
+    _registeredBots = [];
+
+    $.dudlrRobots = function() {
+        return _registeredBots;
+    };
+
+    $.fn.dudlrRobot = function(data) {
+        var last = null;
+        this.each(function() {
+            console.log("this : " + this);
+            last = new DudlrRobot(this, data);
+            _registeredBots.push(last);
+        });
+        return last;
     };
 
 })(jQuery); 

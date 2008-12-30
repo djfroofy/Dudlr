@@ -22,12 +22,20 @@
              dudle.save(upload, 'L'); 
         }
 
+
+        function uploadDudleStrokes(dudle) {
+            $.post('/json/dudles/updateStrokes', {
+                id: dudle.id, data: dudle.recorder.recorded,
+                width: '500', height: '250'
+             }, function() { $('#status>em').text('Saved'); }, 'json');
+        }
+
         function saveDudle(dudle) {
             console.log("saving dudle : " + dudle);
             $('#status>em').text('Saving ...');
 
             if (dudle.id) {
-                uploadDudle(dudle);
+                uploadDudleStrokes(dudle);
                 return;
             }
 
@@ -35,7 +43,7 @@
                 console.log('response : ' + json);
                 console.log("got id : " + json.id);
                 dudle.id = json.id;
-                uploadDudle(dudle);
+                uploadDudleStrokes(dudle);
             }, 'json');
         }
         

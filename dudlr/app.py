@@ -13,7 +13,9 @@ def main():
         ('/dudles/view', views.ViewDudleHandler),
         ('/dudles/images', views.DudleImage),
         ('/json/dudles/save', views.DudleCreationHandler),
-        ('/json/dudles/update', views.DudleUpdateHandler)
+        ('/json/dudles/update', views.DudleUpdateHandler),
+        ('/json/dudles/updateStrokes', views.DudleUpdateStrokesHandler),
+        ('/json/dudles/strokes', views.DudleStrokes)
         ], debug=DEBUG)
     run_wsgi_app(app)
 

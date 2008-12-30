@@ -1,3 +1,5 @@
+import logging
+
 from django.utils import simplejson
 from google.appengine.ext import webapp
 
@@ -41,12 +43,22 @@ class DudleUpdateHandler(JsonHandler):
     def post(self, id, data, format, width, height):
         core.update_dudle(id, format, data)
         core.finalize_dudle(id, format, width, height)
+        self.json('ok')
+
+class DudleUpdateStrokesHandler(JsonHandler):
+
+    @form('id:int', 'data:str', 'width:int', 'height:int')
+    def post(self, id, data, width, height):
+        logging.info('data[0] = ' + data[0])
+        core.update_dudle_strokes(id, data)
+        core.finalize_dudle_strokes(id)
+        self.json('ok')
 
 class ViewDudleHandler(BaseHandler):
 
     def get(self):
         limit = self.request.get('limit', '1')
-        order = self.request.get('order', 'asc')
+        order = self.request.get('order', 'desc')
         dudles = core.get_latest_dudles(limit=int(limit), order=order)
         dudles = [ (d.key().id(), d ) for d in dudles ]
         dudle_ids = [ k for (k,v) in dudles ]
@@ -60,4 +72,10 @@ class DudleImage(webapp.RequestHandler):
         self.response.headers['Content-Type'] = 'image/png'
         self.response.out.write(dudle.image_data)
 
+
+class DudleStrokes(JsonHandler):
+
+    def get(self):
+        dudle = core.get_dudle(int(self.request.get('id')))
+        self.json(dudle.strokes)
 
