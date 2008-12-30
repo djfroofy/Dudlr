@@ -1,0 +1,27 @@
+
+canvas, img.dudle {
+  border: 1px solid #9a9; }
+
+div#dudlr-display-block,
+div#dudlr-canvas-block {
+  text-align: center; }
+
+img.dudle {
+  position: relative;
+  margin: 6px 8px; }
+
+div#legend {
+  margin-top: 55px; }
+
+
+ul#controls-help {
+  margin-left: 0px; 
+  padding: 0px; }
+
+ul#controls-help li {
+  list-style: none;
+  margin-bottom: 5px; }
+
+#status { 
+  margin-bottom: 10px; 
+  color: #555;  }

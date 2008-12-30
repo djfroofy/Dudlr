@@ -1,0 +1,38 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+{% block head %}
+<title>Dudlr - {% block title %}Make it Awesome{% endblock %}</title>
+<style type="text/css" media="screen">
+    @import "/css/main.css?v=1";
+</style>
+<script type="text/javascript" language="javascript" src="/js/jquery-1.2.6.min.js"></script>
+<script type="text/javascript" language="javascript" src="/js/jquery-ui.1.5.2.js"></script>
+<script type="text/javascript" language="javascript" src="/js/dudlr.js"></script>
+<script type="text/javascript" language="javascript">
+    (function(){
+     $(document).ready( function() {
+         // hook
+        });        
+     })();
+</script>
+{% endblock %}
+</head>
+<body>
+
+
+{% include 'header.html' %}
+{% block content_main %}
+
+{% endblock %}
+{% include 'footer.html' %}
+
+{# hidden divs etc. #}
+
+{% block content_tail %}{% endblock %}
+
+</body>
+</html>
+
+

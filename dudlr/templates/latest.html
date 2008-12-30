@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block title %}Demo{% endblock %}
+{% block head %}
+ {{ super() }}
+{% endblock %}
+
+{% block content_main %}
+<div id="dudlr-display-block">
+    {% for id in dudle_ids %}
+    <img class="dudle" src="/dudles/images?id={{ id }}"/><br/>
+    {% endfor %}
+</div>
+{% endblock %}
