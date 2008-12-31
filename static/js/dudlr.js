@@ -121,13 +121,7 @@
             this.cvs = cvs;
             this.active = false;
             this.fillmode = 0;
-            this.fillmodes = [
-                'none',
-                'rgba(0,0,0,0.5)',
-                'rgba(0,0,0,1)',
-                'rgba(255,255,255,0.5)',
-                'rgba(255,255,255,1)'
-            ];
+            this.fillmodes = FILL_MODES;
             this.fillmodeLabels = [
                 'none', 'black (50% transparent)', 'black', 
                 'white (50% transparent)', 'white'
@@ -207,7 +201,7 @@
         }
     };
     
-    DudlrStrokeRecorder = function () {
+    var DudlrStrokeRecorder = function () {
         return this.__init__();
     };
 
@@ -218,9 +212,9 @@
             this.last_command = null;
         },
         lineTo: function(x, y) {
-            if (!this._inbounds(x, y)) {
-                return;
-            }
+            //if (!this._inbounds(x, y)) {
+            //    return;
+            //}
             //var stack = this.stack;
             this._popStack();
             if (this.last_command != 'l') {
@@ -233,9 +227,9 @@
             this.recorded += this._pad(x) + this._pad(y);
         },
         moveTo: function(x, y) {
-            if (!this._inbounds(x, y)) {
-                return;
-            }
+            //if (!this._inbounds(x, y)) {
+            //    return;
+            //}
             this._popStack();
             this.recorded += 'm' + this._pad(x) + this._pad(y);
             this.last_command = 'm';
@@ -256,14 +250,20 @@
         },
         _pad: function(n) {
             var x = n;
-            if (x < 0) {
-                x = 0;
-            }
-            if (x < 10) {
+            if (x < -100) {
+                return '-99';
+            } else if (x < -10) {
+                return '-' + (0 - x);
+            } else if (x < 0) {
+                return '-0' + (0 - x)
+            } else if (x < 10) {
                 return '00' + n;
             } else if (x < 100) {
                 return '0' + n;
             } else {
+                if (x > 1000) {
+                    x = 999;
+                }
                 return '' + n;
             }
         },
@@ -284,30 +284,51 @@
             this.domelement = domelement;
             this.cvs_elm = $(domelement);
             this._timer = false;
+            this._locked = false;
             this.idx = 0;
             this.ctx = this.cvs_elm[0].getContext('2d');
+        },
+
+        clear: function() {
             this.ctx.fillStyle = "rgba(255,255,255,1)";
             this.ctx.fillRect(0, 0, this.cvs_elm[0].width, this.cvs_elm[0].height);
             this.ctx.fillStyle = "rgba(0,0,0,0.5)";
         },
 
         run: function() {
+            if (this._locked) return false; 
             this.idx = 0;
+            this.clear();
+            this._locked = true;
+            this._run();
+        },
+
+        _run: function() {
             while (this.idx < this.recording.length) {
-                this._push();  
-            } 
+                this._push();
+                if (this.idx && (this.idx % 750) == 0) {
+                    var o = this;
+                    window.setTimeout(function() { o._run() }, 1);
+                    break;
+                } 
+            }
         },
 
         handDraw: function(interval) {
+            if (this._locked) return false;
+            this.clear();
+            this._locked = true;
             var o = this;
+            this.idx = 0;
             this._timer = window.setInterval(function() { o._push(); }, interval);
         },
 
         _push: function() {
+            var x, y;
             if (this.recording[this.idx] == 'm') {
                 this.idx++;
-                var x = 1 * (this.recording[this.idx++] + this.recording[this.idx++] + this.recording[this.idx++]);
-                var y = 1 * (this.recording[this.idx++] + this.recording[this.idx++] + this.recording[this.idx++]);
+                x = 1 * (this.recording[this.idx++] + this.recording[this.idx++] + this.recording[this.idx++]);
+                y = 1 * (this.recording[this.idx++] + this.recording[this.idx++] + this.recording[this.idx++]);
                 this.ctx.beginPath();
                 this.ctx.moveTo(x, y);
                 this.ctx.lineTo(x+1, y+1);
@@ -321,19 +342,22 @@
                 this.idx++;
                 this.ctx.fill();
             } else {
-                var x = 1 * (this.recording[this.idx++] + this.recording[this.idx++] + this.recording[this.idx++]);
-                var y = 1 * (this.recording[this.idx++] + this.recording[this.idx++] + this.recording[this.idx++]);
+                x = 1 * (this.recording[this.idx++] + this.recording[this.idx++] + this.recording[this.idx++]);
+                y = 1 * (this.recording[this.idx++] + this.recording[this.idx++] + this.recording[this.idx++]);
                 this.ctx.lineTo(x, y);
                 this.ctx.stroke();
             }
-            if (this._timer && this.idx >= this.recording.length) {
-                window.clearInterval(this._timer);
-                this._timer = false;
+            if (this.idx >= this.recording.length) {
+                this._locked = false;
+                if (this._timer) {
+                    window.clearInterval(this._timer);
+                    this._timer = false;
+                }
             }
         }
     };
 
-    _registered = [];
+    var _registered = [];
 
     $.dudlrCanvases = function() {
         return _registered;
@@ -347,7 +371,7 @@
         });
     };
 
-    _registeredBots = [];
+    var _registeredBots = {};
 
     $.dudlrRobots = function() {
         return _registeredBots;
@@ -357,9 +381,16 @@
         var last = null;
         this.each(function() {
             console.log("this : " + this);
-            last = new DudlrRobot(this, data);
-            _registeredBots.push(last);
+            //last = new DudlrRobot(this, data);
+            //_registeredBots.push(last);
+            var id = $(this).attr('id');
+            console.log('id = ' + id);
+            if (!_registeredBots[id]) {
+                _registeredBots[id] = new DudlrRobot(this, data);
+            }
+            last = _registeredBots[id];
         });
+        console.log('last = ' + last);
         return last;
     };
 
