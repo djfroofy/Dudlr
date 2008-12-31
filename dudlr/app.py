@@ -9,10 +9,13 @@ DEBUG = True
 def main():
     app = webapp.WSGIApplication([
         ('/', views.ViewDudleHandler),
-        ('/e0be1635-0883-499f-b6bd-fda13721d304', views.DudlrDemoHandler),
+        ('/dudles/draw', views.DudlrDemoHandler),
         ('/dudles/view', views.ViewDudleHandler),
         ('/dudles/images', views.DudleImage),
+        ('/profile/edit', views.EditProfileHandler),
+        ('/profile/save', views.SaveProfileHandler),
         ('/json/dudles/save', views.DudleCreationHandler),
+        ('/json/dudles/rate', views.RatingHandler),
         ('/json/dudles/update', views.DudleUpdateHandler),
         ('/json/dudles/updateStrokes', views.DudleUpdateStrokesHandler),
         ('/json/dudles/strokes', views.DudleStrokes)

@@ -16,7 +16,7 @@ indexes:
   - name: complete
   - name: created_date
 
-# Used once in query history.
+# Used 269 times in query history.
 - kind: Dudle
   properties:
   - name: complete

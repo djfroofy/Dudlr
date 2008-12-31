@@ -8,15 +8,27 @@
     @import "/css/main.css?v=1";
 </style>
 <script type="text/javascript" language="javascript" src="/js/jquery-1.2.6.min.js"></script>
-<script type="text/javascript" language="javascript" src="/js/jquery-ui.1.5.2.js"></script>
+{#<script type="text/javascript" language="javascript" src="/js/jquery-ui.1.5.2.js"></script>#}
 <script type="text/javascript" language="javascript" src="/js/dudlr.js"></script>
 <script type="text/javascript" language="javascript">
     (function(){
+
+     function bumpfooter() {
+        var footer = $('#footer');
+        footer.css('top', $(document).height() - (footer.height() + 16)).css(
+            'width', $(document).width() - 20);
+     }
+
      $(document).ready( function() {
-         // hook
+        $('#footer').show();
+        bumpfooter();
+        $(window).resize(bumpfooter);
         });        
      })();
 </script>
+<meta name="title" content="Dudlr.com - Doodle on the internets">
+<meta name="description" content="The premier site for creating and sharing doodles on the internet using only your web browser">
+<meta name="keywords" content="doodle, doodling, doodler, art, digital art, drawing, draw, dudle, dudlr, black and white, creative, simple, monochrome, user generated content, community, browser, canvas, painting, paint, pencil, artwork, pen and ink, ink, artistry">
 {% endblock %}
 </head>
 <body>

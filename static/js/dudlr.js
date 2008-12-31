@@ -17,7 +17,7 @@
     }
 
     var DudlrCanvas = function(domelement) {
-        console.log("Initalizing DudlrCanvas ... " + domelement);
+        //console.log("Initalizing DudlrCanvas ... " + domelement);
         return this.__init__(domelement);
     };
 
@@ -27,7 +27,7 @@
     DudlrCanvas.prototype = {
         __init__: function(domelement) {
             var o = this;
-            console.log("__init__ called : " + domelement);
+            //console.log("__init__ called : " + domelement);
             this.mousex = this.mousey = 0;
             this.lastx = this.lasty = -1;
             this.id = null;
@@ -126,6 +126,9 @@
                 'none', 'black (50% transparent)', 'black', 
                 'white (50% transparent)', 'white'
                 ];
+            this.fillmodeClasses = [
+                'none', 'black-t', 'black', 'white-t', 'white'
+                ];
             this.robot = null;
         },
 
@@ -151,24 +154,23 @@
 
         keyup: function(e) {
             if (e.keyCode == 70) {
-                this.fillmode += 1;
-                this.fillmode = this.fillmode % this.fillmodes.length;
-                this.cvs.recorder.fillStyle(this.fillmode);
-                console.log('fill mode : ' + this.fillmode);
-                // XXX - need to make callback
-                $('#fill-mode').text(this.fillmodeLabels[this.fillmode]);
-                if (this.fillmode) {
-                    console.log('setting fillstyle to : ' + this.fillmodes[this.fillmode]);
-                    this.cvs.ctx.fillStyle = this.fillmodes[this.fillmode];
-                }
-            } else if (e.keyCode == 82) {
-                if (!this.robot) {
-                    $('body').append('<canvas class="robot" width="500" height="250"></canvas>');
-                    $('canvas.robot').dudlrRobot(this.cvs.recorder.recorded);
-                    this.robot = $.dudlrRobots()[0];
-                }
-                this.robot.handDraw(10);
+                this.toggleFillStyle();
+            } 
+        },
+
+        toggleFillStyle: function() {
+            this.fillmode += 1;
+            this.fillmode = this.fillmode % this.fillmodes.length;
+            this.cvs.recorder.fillStyle(this.fillmode);
+            //console.log('fill mode : ' + this.fillmode);
+            // XXX - need to make callback
+            $('#fill-mode').text(this.fillmodeLabels[this.fillmode]);
+            $('#fill-style-icon').attr('class', this.fillmodeClasses[this.fillmode]);
+            if (this.fillmode) {
+                //console.log('setting fillstyle to : ' + this.fillmodes[this.fillmode]);
+                this.cvs.ctx.fillStyle = this.fillmodes[this.fillmode];
             }
+
         },
 
         mousemove: function(e) {
@@ -364,9 +366,9 @@
     };
 
     $.fn.dudlrCanvas = function() {
-        console.log("this [1] : " + this);
+        //console.log("this [1] : " + this);
         return this.each(function() {
-            console.log("this : " + this);
+            //console.log("this : " + this);
             _registered.push(new DudlrCanvas(this));
         });
     };
@@ -380,17 +382,17 @@
     $.fn.dudlrRobot = function(data) {
         var last = null;
         this.each(function() {
-            console.log("this : " + this);
+            //console.log("this : " + this);
             //last = new DudlrRobot(this, data);
             //_registeredBots.push(last);
             var id = $(this).attr('id');
-            console.log('id = ' + id);
+            //console.log('id = ' + id);
             if (!_registeredBots[id]) {
                 _registeredBots[id] = new DudlrRobot(this, data);
             }
             last = _registeredBots[id];
         });
-        console.log('last = ' + last);
+        //console.log('last = ' + last);
         return last;
     };
 

@@ -9,7 +9,7 @@ class Dudlr(db.Expando):
     @param account: Google account associated with the user
     """
     name = db.StringProperty(required=True)
-    account = db.UserProperty(required=True )
+    user = db.UserProperty(required=True )
 
 class Dudle(db.Expando):
     """
@@ -28,19 +28,20 @@ class Dudle(db.Expando):
     updated_date = db.DateTimeProperty(auto_now=True)
     public = db.BooleanProperty(default=False)
     anonymous = db.BooleanProperty(default=False)
-    rating = db.RatingProperty()
+    rating = db.RatingProperty(default=0)
+    rated_count = db.IntegerProperty(default=0)
     image_data = db.BlobProperty()
     strokes = db.BlobProperty()
     complete = db.BooleanProperty(default=False)
     artist = db.ReferenceProperty(Dudlr)
-    # partial = Temporary reference to partially uploaded image data
 
-#class DudlePartial(db.Model):
-#    """
-#    Partial upload of a Dudle.  When completed image data is copied
-#    to associated Dudle object and the DudlePartial is removed.
-#    """
-#    dudle = db.ReferenceProperty(Dudle, required=True)
-#    data = db.BlobProperty(default='')
-#    #data = db.ListProperty(default=[])
+
+class DudleRating(db.Model):
+    """
+    A record of a users rating on a dudle
+    """
+    dudle_id = db.IntegerProperty(required=True)
+    rating = db.RatingProperty(default=0)
+    user = db.UserProperty(required=True)
+
 

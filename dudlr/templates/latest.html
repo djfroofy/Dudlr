@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}Demo{% endblock %}
+{% block title %}The Only Place to "Dudle" on The Internets{% endblock %}
 {% block head %}
     {{ super() }}
     <script type="text/javascript" language="javascript">
@@ -20,6 +20,40 @@
                         $('#dudle-' + id).dudlrRobot(json).handDraw(10); 
                     });
             });
+            $('ul.user-rating > li > a').mouseout(function(event) {
+                var target = $(event.target).parent().parent();
+                target.find('a').removeClass('hovering').removeClass('empty');
+            }).mouseover(function(event) {
+                var target = $(event.target);
+                target.parent().nextAll().children('a').removeClass('hovering').addClass('empty');
+                target.addClass('hovering');
+                target.parent().prevAll().children('a').addClass('hovering');
+             }).click(function(event) {
+                var target = $(event.target);
+                var li = target.parent();
+                var rating = 1 + li.prevAll().length;
+                var dudle_id = li.parent().parent().find('canvas').attr('id').split('-')[1];
+                $.post('/json/dudles/rate', {rating:rating, id:dudle_id}, function(json) { 
+                    if (json.status == 'ok') {
+                        console.log('rating : ' + json.rating);
+                        var ul = $('#dudle-block-' + dudle_id + ' > ul');
+                        var tokens = ("" + (json.rating / 20)).split('.');
+                        var stars;
+                        if (tokens.length > 1) {
+                            var decimal = 1 * tokens[1][0];
+                            stars = 1 * tokens[0];//+ ((decimal >= 5) ? 1 : 0);
+                        } else {
+                            stars = 1 * tokens[0];
+                        }
+                        var ct = 0;
+                        ul.find('a').each(function() {
+                            if (ct++ < stars) {
+                                $(this).addClass('filled');
+                            }    
+                        });
+                    }
+                }, 'json');
+             });
         });
     </script>
 {% endblock %}
@@ -28,7 +62,20 @@
 <div id="dudlr-display-block">
     {% for id in dudle_ids %}
     {#<img class="dudle" src="/dudles/images?id={{ id }}"/><br/>#}
-    <canvas class="dudle" id="dudle-{{ id }}" width="500" height="250">Your browser is a piece of shit</canvas><br/>
+    <div id="dudle-block-{{ id }}" class="dudle-block">
+    {% set dudle=dudles[id] %}
+    <ul class="user-rating">
+        <li><a{%if dudle.rating is gt 0%} class="filled"{%endif%}></a></li>
+        <li><a{%if dudle.rating is gt 20%} class="filled"{%endif%}></a></li>
+        <li><a{%if dudle.rating is gt 40%} class="filled"{%endif%}></a></li>
+        <li><a{%if dudle.rating is gt 60%} class="filled"{%endif%}></a></li>
+        <li><a{%if dudle.rating is gt 80%} class="filled"{%endif%}></a></li>
+    </ul>
+    <canvas class="dudle" id="dudle-{{ id }}" width="500" height="250">
+    Your browser is a piece of shit. Sorry about that.</canvas><br/>
+    <em class="username">{{ dudle.artist.name or 'Anonymous' }}</em>
+    <em class="timestamp">{{ dudle.created_date }}</em>
+    </div>
     {% endfor %}
 </div>
 {% endblock %}

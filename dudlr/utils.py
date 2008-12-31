@@ -1,6 +1,14 @@
 import os
 
 from jinja2 import Environment, FileSystemLoader
+from jinja2 import tests
+
+def test_gt(n, other):
+    return n > other
+
+tests.TESTS.update({
+    'gt' : test_gt
+})
 
 
 TEMPLATE_PATH = os.path.join(os.path.dirname(__file__), 'templates')
@@ -26,4 +34,6 @@ def form(*names):
         _wrapper2.__doc__ = m.__doc__
         return _wrapper2
     return _wrapper
+
+
 

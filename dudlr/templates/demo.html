@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}Demo{% endblock %}
+{% block title %}Create{% endblock %}
 {% block head %}
  {{ super() }}
  <script type="text/javascript" language="javascript">
@@ -49,11 +49,16 @@
         
 
         $("#dudlr-canvas").dudlrCanvas();
+        var cvs = $.dudlrCanvases()[0];
         $().keyup(function(evt) {
             if (evt.keyCode == 83) {
-                saveDudle($.dudlrCanvases()[0]);
+                saveDudle(cvs);
             }
         });
+        $('#save-button').click(function() {
+            saveDudle(cvs); });
+        $('#fill-style-icon').click(function() {
+            cvs.widget.toggleFillStyle();});
      });
  </script>
 {% endblock %}
@@ -61,20 +66,21 @@
 {% block content_main %}
 <div id="dudlr-canvas-block">
 
+
     <canvas id="dudlr-canvas" width="500" height="250">
     Your browser doesn't support the canvas element. That's too bad.
-    </canvas>
+    </canvas><br/>
+    <input type="button" value="Save" id="save-button"/><br/>
 
     <div id="legend">
         <div id="status"><em></em></div>
+        <div id="fill-style-icon">&nbsp;</div>
         <div><em>Fill Mode: <span id="fill-mode">none</span></em></div>
-
         <ul id="controls-help">
             <li>Press <strong>F</strong> to toggle Fill Mode</li>
-            <li>Press <strong>S</strong> to Save</li>
         </ul>
     </div>
-
+    
 
 </div>
 {% endblock %}

@@ -1,5 +1,16 @@
 
 
+<ul id="header">
+    <li><a href="/">Latest Dudles</a></li>
+    <li><a href="/dudles/draw">Dudle</a></li>
+    {% if user %}
+    <li><a href="/profile/edit">Profile</a></li>
+    <li id="signin">{{ user.nickname() }} <a href="{{ logout_url }}">sign out</a></li>
+    {% else %}
+    <li id="signin"><a href="{{ login_url }}">sign in</a></li>
+    {% endif %}
+</ul>
+
 
 
 
