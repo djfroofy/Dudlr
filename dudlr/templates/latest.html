@@ -74,11 +74,23 @@ The Only Place to "Dudle" on The Internets
 
 {% block content_main %}
 <div id="dudlr-display-block">
+
     {% if artist and artist.name == dudlr.name %}
     <h2>My Gallery</h2>
     {% elif artist %}
     <h2>Dudles by artist: <em>{{ artist.name}}</em></h2>
     {% endif %}
+
+    <!-- {{ pages }} -->
+    {% if (pages - 1) %}
+    <!-- {{ page }} -->
+    <ul id="pagination">
+    {% for pg in range(1, pages+1) %}
+    <li><a href="?page={{ pg }}"{%if pg == page%} class="focussed"{%endif%}>{{ pg }}</a></li>    
+    {% endfor %}
+    </ul>
+    {% endif %}
+
     {% for id in dudle_ids %}
     {#<img class="dudle" src="/dudles/images?id={{ id }}"/><br/>#}
     <div id="dudle-block-{{ id }}" class="dudle-block">

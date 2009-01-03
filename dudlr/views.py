@@ -1,4 +1,5 @@
 import logging
+import math
 
 from django.utils import simplejson
 from google.appengine.ext import webapp
@@ -70,16 +71,17 @@ class DudleUpdateStrokesHandler(JsonHandler):
 class ViewDudleHandler(BaseHandler):
 
     def get(self):
-        #limit = self.request.get('limit', '5')
-        #limit = 5
-        order = 'desc'#self.request.get('order', 'desc')
-        page = self.request.get('page', 1)
-        offset = (int(page) - 1) * 5
-        dudles = core.get_latest_dudles(limit=5, order=order)
+        order = 'desc'
+        page = int(self.request.get('page', 1))
+        offset = (page - 1) * 5
+        dudles, count = core.get_latest_dudles(limit=5, order=order, offset=offset)
         dudles = [ (d.key().id(), d ) for d in dudles ]
         dudle_ids = [ k for (k,v) in dudles ]
         dudles = dict(dudles)
-        self.render_template('latest.html', dudle_ids=dudle_ids, dudles=dudles, artist=False)
+        self.render_template('latest.html',
+                dudle_ids=dudle_ids,
+                dudles=dudles, artist=False,
+                page=page, pages=int(math.ceil(count/5.)))
 
 
 class DudlrGalleryHandler(BaseHandler):
@@ -88,15 +90,16 @@ class DudlrGalleryHandler(BaseHandler):
         order = 'desc'
         id = int(self.request.path.split('/')[-1])
         logging.info('artist : %d' % id)
-        page = self.request.get('page', 1)
-        offset = (int(page) - 1) * 5
+        page = int(self.request.get('page', 1))
+        offset = (page - 1) * 5
         artist = core.get_dudlr_by_id(id)
-        dudles = core.get_gallery(artist, users.get_current_user(), limit=5, offset=offset)
+        dudles, count = core.get_gallery(artist, users.get_current_user(), limit=5, offset=offset)
         dudles = [ (d.key().id(), d ) for d in dudles ]
         dudle_ids = [ k for (k,v) in dudles ]
         dudles = dict(dudles)
         self.render_template('latest.html',
-                dudle_ids=dudle_ids, dudles=dudles, artist=artist)
+                dudle_ids=dudle_ids, dudles=dudles, artist=artist,
+                page=page, pages=int(math.ceil(count/5.)))
 
 
 class DudleImage(webapp.RequestHandler):

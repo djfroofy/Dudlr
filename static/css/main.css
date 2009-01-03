@@ -64,7 +64,7 @@ ul#header {
   border-bottom: 2px solid #9a9;
 }
 
-ul#header li {
+ul#header li, ul#pagination li {
   display: inline;
   background-color: white;
   border: 1px solid #9a9; }
@@ -80,12 +80,20 @@ ul#header li#signin a {
   color: #484;
   font-weight: bold; }
 
-ul#header li a {
+ul#header li a, ul#pagination li a {
   text-decoration: none; 
   color: black;
   padding: 0px 12px; }
 
-ul#header li a.focussed {
+ul#pagination li a {
+  padding: 0 7px;
+}
+
+ul#pagination {
+  padding: 0;
+}
+
+ul#header li a.focussed, ul#pagination li a.focussed {
   background-color: #9a9;
   color: #eee; }
 

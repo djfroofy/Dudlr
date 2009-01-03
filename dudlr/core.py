@@ -195,9 +195,11 @@ def get_latest_dudles(limit=5, order='asc', offset=0):
     Get last C{limit} dudles
     """
     o = { 'asc':'', 'desc':'-' }[order]
-    dudles = Dudle.all().filter('complete = ', True
-            ).filter('public = ', True).order('%screated_date' % o).fetch(limit)
-    return dudles
+    query = Dudle.all().filter('complete = ', True
+            ).filter('public = ', True).order('%screated_date' % o)
+    count = query.count(1000)
+    dudles = query.fetch(limit=limit, offset=offset)
+    return dudles, count
 
 
 def get_gallery(artist, current_user=None, offset=0, limit=5):
@@ -214,8 +216,9 @@ def get_gallery(artist, current_user=None, offset=0, limit=5):
     query = Dudle.all().filter('artist = ', artist).filter('complete = ', True)
     if current_user != artist.user:
         query = query.filter('public = ', True).filter('anonymous = ', False)
+    count = query.count(1000)
     dudles = query.order('-created_date').fetch(limit=limit, offset=offset)
-    return dudles
+    return dudles, count
 
 def _pngData(data, width, height):
     fd = StringIO()

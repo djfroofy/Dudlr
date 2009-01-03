@@ -10,7 +10,7 @@ indexes:
 # automatically uploaded to the admin console when you next deploy
 # your application using appcfg.py.
 
-# Used 5 times in query history.
+# Used 7 times in query history.
 - kind: Dudle
   properties:
   - name: anonymous
@@ -20,7 +20,7 @@ indexes:
   - name: created_date
     direction: desc
 
-# Used 20 times in query history.
+# Used 47 times in query history.
 - kind: Dudle
   properties:
   - name: artist
@@ -50,7 +50,7 @@ indexes:
   - name: created_date
     direction: desc
 
-# Used 68 times in query history.
+# Used 132 times in query history.
 - kind: Dudle
   properties:
   - name: complete
