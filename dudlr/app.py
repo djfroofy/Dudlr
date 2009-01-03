@@ -11,6 +11,7 @@ def main():
         ('/', views.ViewDudleHandler),
         ('/dudles/draw', views.DudlrDemoHandler),
         ('/dudles/view', views.ViewDudleHandler),
+        ('/dudles/toprated', views.TopRatedDudleHandler),
         ('/dudles/images', views.DudleImage),
         ('/dudlr/.*', views.DudlrGalleryHandler),
         ('/profile/edit', views.EditProfileHandler),

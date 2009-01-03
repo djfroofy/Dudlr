@@ -2,6 +2,7 @@
 
 <ul id="header">
     <li><a href="/"{%if request.path=='/'%} class="focussed"{%endif%}>Latest Dudles</a></li>
+    <li><a href="/dudles/toprated"{%if request.path=='/dudles/toprated'%} class="focussed"{%endif%}>Top Rated</a></li>
     <li><a href="/dudles/draw"{%if request.path=='/dudles/draw'%} class="focussed"{%endif%}>Dudle</a></li>
     {% if user %}
     <li><a href="/dudlr/{{ dudlr.key().id() }}"{%if request.path[:]==('/dudlr/%d' % dudlr.key().id())%} class="focussed"{%endif%}>My Gallery</a></li>

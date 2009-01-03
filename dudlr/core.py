@@ -202,6 +202,17 @@ def get_latest_dudles(limit=5, order='asc', offset=0):
     return dudles, count
 
 
+def get_toprated_dudles(limit=5, offset=0):
+    """
+    Get the highest rated dudles
+    """
+    query = Dudle.all().filter('complete = ', True
+            ).filter('public = ', True).order('-rating')
+    count = query.count(1000)
+    dudles = query.fetch(limit=limit, offset=offset)
+    return dudles, count
+
+
 def get_gallery(artist, current_user=None, offset=0, limit=5):
     """
     Get dudles by artist.

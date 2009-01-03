@@ -83,6 +83,20 @@ class ViewDudleHandler(BaseHandler):
                 dudles=dudles, artist=False,
                 page=page, pages=int(math.ceil(count/5.)))
 
+class TopRatedDudleHandler(BaseHandler):
+
+    def get(self):
+        page = int(self.request.get('page', 1))
+        offset = (page - 1) * 5
+        dudles, count = core.get_toprated_dudles(limit=5, offset=offset)
+        dudles = [ (d.key().id(), d ) for d in dudles ]
+        dudle_ids = [ k for (k,v) in dudles ]
+        dudles = dict(dudles)
+        logging.info('got dudles : %d' % len(dudles))
+        self.render_template('latest.html',
+                dudle_ids=dudle_ids,
+                dudles=dudles, artist=False,
+                page=page, pages=int(math.ceil(count/5.)))
 
 class DudlrGalleryHandler(BaseHandler):
 
