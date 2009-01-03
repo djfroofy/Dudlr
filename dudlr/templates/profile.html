@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block title %}Profile Settings{% endblock %}
+{% block head %}
+ {{ super() }}
+ <script type="text/javascript" language="javascript">
+     $(document).ready(function() {
+
+     });
+ </script>
+{% endblock %}
+
+{% block content_main %}
+<div id="dudlr-canvas-block">
+
+    <form name="profile_settings" id="profile-settings" action="/profile/save" method="POST">
+        <p>
+        Edit profile information.
+        </p>
+        {% if error %}
+        <div class="error-message">
+        {% if error == 1 %}
+        Nickname has already been set.
+        {% elif error == 2 %}
+        Nickname "{{ name }}" has already been taken.
+        {% else %}
+        Nickname "{{ name }}" is too long.
+        {% endif %}
+        </div>
+        {% endif %}
+        {% if user.nickname() == dudlr.name and not error %}
+        <div class="warning-message">
+        You can only change your nickname once! Choose wisely, as there is no going back.
+        </div>
+        {%endif%}
+        <label>Nickname:</label> 
+        {% if user.nickname() == dudlr.name %}
+        <input name="name" type="text" value="{{ dudlr.name }}"/>
+        {% else %}
+        <span>{{ dudlr.name }}</span>
+        {% endif %}
+        {% if user.nickname() == dudlr.name %}
+        <input type="submit" value="Save"/>
+        {% endif %}
+    </form>
+    
+
+</div>
+{% endblock %}
