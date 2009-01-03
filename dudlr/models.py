@@ -26,7 +26,7 @@ class Dudle(db.Expando):
     """
     created_date = db.DateTimeProperty(auto_now_add=True)
     updated_date = db.DateTimeProperty(auto_now=True)
-    public = db.BooleanProperty(default=False)
+    public = db.BooleanProperty(default=True)
     anonymous = db.BooleanProperty(default=False)
     rating = db.RatingProperty(default=0)
     rated_count = db.IntegerProperty(default=0)

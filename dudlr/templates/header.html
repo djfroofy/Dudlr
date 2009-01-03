@@ -1,11 +1,12 @@
 
 
 <ul id="header">
-    <li><a href="/">Latest Dudles</a></li>
-    <li><a href="/dudles/draw">Dudle</a></li>
+    <li><a href="/"{%if request.path=='/'%} class="focussed"{%endif%}>Latest Dudles</a></li>
+    <li><a href="/dudles/draw"{%if request.path=='/dudles/draw'%} class="focussed"{%endif%}>Dudle</a></li>
     {% if user %}
-    <li><a href="/profile/edit">Profile</a></li>
-    <li id="signin">{{ user.nickname() }} <a href="{{ logout_url }}">sign out</a></li>
+    <li><a href="/dudlr/{{ dudlr.key().id() }}"{%if request.path[:]==('/dudlr/%d' % dudlr.key().id())%} class="focussed"{%endif%}>My Gallery</a></li>
+    <li><a href="/profile/edit"{%if request.path=='/profile/edit'%} class="focussed"{%endif%}>Profile</a></li>
+    <li id="signin">{{ dudlr.name }} <a href="{{ logout_url }}">sign out</a></li>
     {% else %}
     <li id="signin"><a href="{{ login_url }}">sign in</a></li>
     {% endif %}

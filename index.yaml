@@ -10,16 +10,51 @@ indexes:
 # automatically uploaded to the admin console when you next deploy
 # your application using appcfg.py.
 
+# Used 5 times in query history.
+- kind: Dudle
+  properties:
+  - name: anonymous
+  - name: artist
+  - name: complete
+  - name: public
+  - name: created_date
+    direction: desc
+
+# Used 20 times in query history.
+- kind: Dudle
+  properties:
+  - name: artist
+  - name: complete
+  - name: created_date
+    direction: desc
+
+# Unused in query history -- copied from input.
+- kind: Dudle
+  properties:
+  - name: artist
+  - name: complete
+  - name: public
+  - name: created_date
+    direction: desc
+
 # Unused in query history -- copied from input.
 - kind: Dudle
   properties:
   - name: complete
   - name: created_date
 
-# Used 269 times in query history.
+# Unused in query history -- copied from input.
 - kind: Dudle
   properties:
   - name: complete
+  - name: created_date
+    direction: desc
+
+# Used 68 times in query history.
+- kind: Dudle
+  properties:
+  - name: complete
+  - name: public
   - name: created_date
     direction: desc
 

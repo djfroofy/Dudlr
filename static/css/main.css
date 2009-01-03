@@ -2,6 +2,10 @@ body {
   margin: 0;
   font-family: helvetica; }
 
+a {
+  text-decoration: none;
+  color: #484; }
+
 canvas, img.dudle {
   border: 1px solid #9a9; }
 
@@ -65,7 +69,6 @@ ul#header li {
   background-color: white;
   border: 1px solid #9a9; }
 
-
 ul#header li#signin {
   background-color: transparent;
   border: none;
@@ -80,7 +83,11 @@ ul#header li#signin a {
 ul#header li a {
   text-decoration: none; 
   color: black;
-  padding: 12px 15px; }
+  padding: 0px 12px; }
+
+ul#header li a.focussed {
+  background-color: #9a9;
+  color: #eee; }
 
 #footer {
   background-color: #eee;
@@ -95,25 +102,25 @@ ul#header li a {
   margin-left: auto;
   margin-right: auto;
   margin-bottom: 15px;
-  width: 68px;
-  height: 68px;
+  width: 32px;
+  height: 32px;
   background:transparent url(/img/fs.png) no-repeat 0 0;
 }
 
 #fill-style-icon.black-t {
-  background:transparent url(/img/fs.png) no-repeat 0 -68px;
+  background:transparent url(/img/fs.png) no-repeat 0 -32px;
 }
 
 #fill-style-icon.black {
-  background:transparent url(/img/fs.png) no-repeat 0 -136px;
+  background:transparent url(/img/fs.png) no-repeat 0 -64px;
 }
 
 #fill-style-icon.white-t {
-  background:transparent url(/img/fs.png) no-repeat 0 -204px;
+  background:transparent url(/img/fs.png) no-repeat 0 -96px;
 }
 
 #fill-style-icon.white {
-  background:transparent url(/img/fs.png) no-repeat 0 -272px;
+  background:transparent url(/img/fs.png) no-repeat 0 -128px;
 }
 
 ul.user-rating {
@@ -138,8 +145,26 @@ ul.user-rating a {
 ul.user-rating a.filled {
   background: transparent url(/img/stars.png) no-repeat 0 -32px;}
 
-ul.user-rating a:hover, ul.user-rating a.hovering {
+ul.user-rating a.hovering {
   background: transparent url(/img/stars.png) no-repeat 0 -64px;}
 
 ul.user-rating a.filled.empty {
   background: transparent url(/img/stars.png) no-repeat 0 0;}
+
+div.warning-message, div.error-message {
+  text-align: left;
+  padding: 6px 8px;
+  width: 500px;
+  margin-left: auto; 
+  margin-right: auto;
+  margin-bottom: 17px; }
+
+div.warning-message {
+  background-color: #ffa; 
+  border: 2px solid brown; }
+
+div.error-message {
+  background-color: pink; 
+  border: 2px solid red; }
+
+

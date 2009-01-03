@@ -24,9 +24,12 @@
 
 
         function uploadDudleStrokes(dudle) {
+            var public_flag = $('#public-checkbox:checked').length == 1;
+            var anon_flag = $('#anon-checkbox:checked').length == 1;
             $.post('/json/dudles/updateStrokes', {
                 id: dudle.id, data: dudle.recorder.recorded,
-                width: '500', height: '250'
+                width: '500', height: '250', 'public':public_flag,
+                anon: anon_flag
              }, function() { $('#status>em').text('Saved'); }, 'json');
         }
 
@@ -66,18 +69,28 @@
 {% block content_main %}
 <div id="dudlr-canvas-block">
 
-
+    {% if not user %}
+    <div class="warning-message">
+        You're not signed in.  Dudle will be posted anonymously.<br/>
+        You can <a href="{{ login_url }}">sign in</a> using your google account.
+    </div>
+    {% endif %}
     <canvas id="dudlr-canvas" width="500" height="250">
     Your browser doesn't support the canvas element. That's too bad.
     </canvas><br/>
+    {% if not user %}<span style="display: none">{% endif %}
+    <label>Public?</label><input id="public-checkbox" name="public_flag" type="checkbox" checked="checked"/>
+    <label>Post Anonymously?</label><input id="anon-checkbox" name="anon_checkbox" type="checkbox"/>
+    {% if not user %}</span>{% endif %}
     <input type="button" value="Save" id="save-button"/><br/>
 
     <div id="legend">
         <div id="status"><em></em></div>
         <div id="fill-style-icon">&nbsp;</div>
-        <div><em>Fill Mode: <span id="fill-mode">none</span></em></div>
+        <div><em><span id="fill-mode">none</span></em></div>
         <ul id="controls-help">
             <li>Press <strong>F</strong> to toggle Fill Mode</li>
+            <li>Press <strong>S</strong> to save</li>
         </ul>
     </div>
     

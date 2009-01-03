@@ -1,5 +1,10 @@
 {% extends 'base.html' %}
-{% block title %}The Only Place to "Dudle" on The Internets{% endblock %}
+{% block title %}
+{%if artist %}Gallery for {{ artist.name }}
+{% else %}
+The Only Place to "Dudle" on The Internets
+{% endif %}
+{% endblock %}
 {% block head %}
     {{ super() }}
     <script type="text/javascript" language="javascript">
@@ -20,7 +25,8 @@
                         $('#dudle-' + id).dudlrRobot(json).handDraw(10); 
                     });
             });
-            $('ul.user-rating > li > a').mouseout(function(event) {
+            {% if user %}
+            $('ul.active-user-rating > li > a').mouseout(function(event) {
                 var target = $(event.target).parent().parent();
                 target.find('a').removeClass('hovering').removeClass('empty');
             }).mouseover(function(event) {
@@ -37,43 +43,70 @@
                     if (json.status == 'ok') {
                         console.log('rating : ' + json.rating);
                         var ul = $('#dudle-block-' + dudle_id + ' > ul');
-                        var tokens = ("" + (json.rating / 20)).split('.');
                         var stars;
-                        if (tokens.length > 1) {
-                            var decimal = 1 * tokens[1][0];
-                            stars = 1 * tokens[0];//+ ((decimal >= 5) ? 1 : 0);
+                        if (json.rating > 80) {
+                            stars = 5;
+                        } else if (json.rating > 60) {
+                            stars = 4;
+                        } else if (json.rating > 40) {
+                            stars = 3;
+                        } else if (json.rating > 20) {
+                            stars = 2;
                         } else {
-                            stars = 1 * tokens[0];
+                            stars = 1;
                         }
+                        console.log('stars : ' + stars);
                         var ct = 0;
                         ul.find('a').each(function() {
                             if (ct++ < stars) {
                                 $(this).addClass('filled');
-                            }    
+                            }  else {
+                                $(this).removeClass('filled');
+                            }
                         });
                     }
                 }, 'json');
-             });
+              });
+            {% endif %}
         });
     </script>
 {% endblock %}
 
 {% block content_main %}
 <div id="dudlr-display-block">
+    {% if artist and artist.name == dudlr.name %}
+    <h2>My Gallery</h2>
+    {% elif artist %}
+    <h2>Dudles by artist: <em>{{ artist.name}}</em></h2>
+    {% endif %}
     {% for id in dudle_ids %}
     {#<img class="dudle" src="/dudles/images?id={{ id }}"/><br/>#}
     <div id="dudle-block-{{ id }}" class="dudle-block">
     {% set dudle=dudles[id] %}
-    <ul class="user-rating">
+    {% if dudle.public %}
+    <ul class="user-rating{%if dudlr.name != dudle.artist.name %} active-user-rating{%endif%}">
         <li><a{%if dudle.rating is gt 0%} class="filled"{%endif%}></a></li>
         <li><a{%if dudle.rating is gt 20%} class="filled"{%endif%}></a></li>
         <li><a{%if dudle.rating is gt 40%} class="filled"{%endif%}></a></li>
         <li><a{%if dudle.rating is gt 60%} class="filled"{%endif%}></a></li>
         <li><a{%if dudle.rating is gt 80%} class="filled"{%endif%}></a></li>
     </ul>
+    {% else %}
+    <strong>Private</strong>
+    {% endif %}
     <canvas class="dudle" id="dudle-{{ id }}" width="500" height="250">
     Your browser is a piece of shit. Sorry about that.</canvas><br/>
-    <em class="username">{{ dudle.artist.name or 'Anonymous' }}</em>
+    {% if not dudle.anonymous %}
+        {% if dudle.artist.name and not artist %}
+        <em class="username"><a href="/dudlr/{{ dudle.artist.key().id() }}">{{ dudle.artist.name }}</a></em>
+        {% elif dudle.artist.name %}
+        <em class="username">{{ dudle.artist.name }}</em>
+        {% else %}
+        <em class="username">Anonymous</em>
+        {% endif %}
+    {% else %}
+    <em class="username">Anonymous</em>
+    {% endif %}
     <em class="timestamp">{{ dudle.created_date }}</em>
     </div>
     {% endfor %}
