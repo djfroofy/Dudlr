@@ -1,14 +1,36 @@
-import logging
 import math
+import os
+import json
 
-from django.utils import simplejson
+
+from twisted.web.static import File
+
+#from django.utils import simplejson
 #from google.appengine.ext import webapp
 #from google.appengine.api import users
+from klein import route, resource
 
-from dudlr import core
-from dudlr.core import DudleException
-from dudlr.utils import jinja_env, form
+#from dudlr import core
+#from dudlr.core import DudleException
+from dudlr.utils import jinja_env, form, render_template
 
+
+__all__ = ['resource', 'viewDudle']
+
+
+@route('/js/')
+def javascripts(request):
+    return File('./static/js')
+
+
+@route('/img/')
+def images(request):
+    return File('./static/img')
+
+
+@route('/css/')
+def stylesheets(request):
+    return File('./static/css')
 
 
 #class TemplateRequestHandler(webapp.RequestHandler):
@@ -70,6 +92,15 @@ from dudlr.utils import jinja_env, form
 #        core.finalize_dudle_strokes(id, public, anon)
 #        self.json('ok')
 #
+
+
+@route('/')
+def viewDudle(request):
+    dudles = []
+    dudle_ids = []
+    return render_template(request, 'latest.html', dudle_ids=dudle_ids,
+            dudles=dudles, artist=False, page=1, pages=1)
+
 #class ViewDudleHandler(BaseHandler):
 #
 #    def get(self):

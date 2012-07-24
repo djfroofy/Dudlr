@@ -37,3 +37,12 @@ def form(*names):
 
 
 
+def render_template(request, template, **context):
+#    context['user'] = user = users.get_current_user()
+#    context['dudlr'] = core.get_dudlr(user)
+    context['request'] = request
+#    if user is None:
+#        context['login_url'] = users.create_login_url(self.request.url)
+#    else:
+#        context['logout_url'] = users.create_logout_url('/')
+    return jinja_env.get_template(template).render(**context)
